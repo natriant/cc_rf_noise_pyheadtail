@@ -1,0 +1,12 @@
+getenv                  = True
+notification            = Always
+
+executable              = my_executable.sh
+arguments               = $(ClusterId)$(ProcId)
+output                  = output/welcome.$(ClusterId).$(ProcId).out
+error                   = error/welcome.$(ClusterId).$(ProcId).err
+log                     = log/welcome.$(ClusterId).log
++JobFlavour 		= "tomorrow"
++AccountingGroup = "group_u_BE.ABP.SLAP"
+queue  
+
