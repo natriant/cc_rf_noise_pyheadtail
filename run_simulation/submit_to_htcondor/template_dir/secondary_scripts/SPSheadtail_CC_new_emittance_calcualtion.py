@@ -97,8 +97,8 @@ app_xy         = -0*2.25e-11
 
 
 transverse_map = TransverseMap(s, alpha_x, beta_x, D_x, alpha_y, beta_y, D_y, Q_x, Q_y,
-    Chromaticity(Qp_x, Qp_y),
-    AmplitudeDetuning(app_x, app_y, app_xy)) 
+    [Chromaticity(Qp_x, Qp_y),
+    AmplitudeDetuning(app_x, app_y, app_xy)]) 
 
 # CREATE LONGITUDINAL MAP
 # =======================

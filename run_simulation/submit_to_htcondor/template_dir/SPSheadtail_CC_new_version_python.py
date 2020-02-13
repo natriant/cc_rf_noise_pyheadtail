@@ -22,10 +22,10 @@ from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(3e5)            #number of cycles to run the simulation for
+n_turns = int(1e5)            #number of cycles to run the simulation for
 decTurns =int(100)               #how often to record data
 
-Q_x = 26.18                 #How many times the particles oscillate in phase space each turn 
+Q_x = 26.13 #18                 #How many times the particles oscillate in phase space each turn 
                             # Will need it to be 16.25 IF CC feedback is used
                             # For this version of PyHEADTAIL Q_x should be an array
 
@@ -37,8 +37,8 @@ filename = 'file.txt'      #Where the data for the run is saved
 numDelay = 1                #Turns of delay between measuring and acting with the feedback system
                             #Make sure to adjust Q_x if adjusting numDelay
 
-ampNoiseOn = 1              #Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 0            #Turns on the phase noise - 0 is off, 1 is on
+ampNoiseOn = 0              #Turns on the amplitude noise - 0 is off, 1 is on
+phaseNoiseOn = 1            #Turns on the phase noise - 0 is off, 1 is on
 stdAmpNoise = 1e-8          #Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8      #Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
@@ -65,26 +65,26 @@ frev           = 299792458/circumference
 # =====================
 n_segments     = 1
 s              = np.arange(0, n_segments + 1) * circumference / n_segments
-alpha_x        = 0 * np.ones(n_segments)
-beta_x         = 75 * np.ones(n_segments) 
-D_x            = 0 * np.ones(n_segments)
-alpha_y        = 0 * np.ones(n_segments)
-beta_y         = 72 * np.ones(n_segments) 
+alpha_x        = -0.8757651182* np.ones(n_segments) #0 * np.ones(n_segments)
+beta_x         = 29.23* np.ones(n_segments) #75 * np.ones(n_segments) 
+D_x            = -0.4837377902 * np.ones(n_segments) #0 * np.ones(n_segments)
+alpha_y        = 1.898525134 * np.ones(n_segments) #0 * np.ones(n_segments)
+beta_y         = 76.07315729*np.ones(n_segments) #72 * np.ones(n_segments) 
 D_y            = 0 * np.ones(n_segments)
 
 Qp_x           = 0 #10
 Qp_y           = 0
 
-Q_y            = 26.32
+Q_y            = 26.18 #13
 
-app_x          = 4e-11
-app_y          = 0*3e-11
+app_x          = 2.4705e-15 #4e-11
+app_y          = -7.31-14 #0*3e-11
 app_xy         = -0*2.25e-11
 
 
 transverse_map = TransverseMap(s, alpha_x, beta_x, D_x, alpha_y, beta_y, D_y, Q_x, Q_y,
-    Chromaticity(Qp_x, Qp_y),
-    AmplitudeDetuning(app_x, app_y, app_xy)) 
+    [Chromaticity(Qp_x, Qp_y),
+    AmplitudeDetuning(app_x, app_y, app_xy)]) 
 
 # CREATE LONGITUDINAL MAP
 # =======================
@@ -186,14 +186,16 @@ for i in range(n_turns):
     # Crab cavity
     Vcc = 1e6
     p_cc = Vcc/(gamma*.938e9) # Vo/Eb
-#     bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
+    #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
 
     # Gaussian Amplitude noise
-    bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+    #bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+    bunch.yp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
 
     # Gaussian Phase noise
-    bunch.xp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    
+    #bunch.xp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+    bunch.yp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+
     #These next two lines actually "run" the simulation - the computationally heavy part
     for m in one_turn_map:
         m.track(bunch)
@@ -207,7 +209,7 @@ for i in range(n_turns):
     momCorr = (ampGain)*posCorr/beta_x[0]
     delayAmp[0:-1] = delayAmp[1:]
     delayAmp[numDelay] = momCorr
-    bunch.xp += delayAmp[0]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+    #bunch.xp += delayAmp[0]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
     
     #Phase Correction
     posCorr = (posavg+negavg)/2
@@ -215,7 +217,7 @@ for i in range(n_turns):
     momCorr = (phaseGain)*posCorr/beta_x[0]
     delayPhase[0:-1] = delayPhase[1:]
     delayPhase[numDelay] = momCorr
-    bunch.xp += delayPhase[0]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+    #bunch.xp += delayPhase[0]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
 
     if i%decTurns is  0:
         j = int(i/decTurns)
