@@ -180,7 +180,7 @@ emitY = np.zeros(n_damped_turns)
 
 run_number = %run_number
 
-noiseKicks = pickle.load(open('./template_dir_fixed_kicks/my_noise_kicks.pkl', 'rb')) # load the pickl for the noise kicks for every run
+noiseKicks = pickle.load(open('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/template_dir_fixed_kicks/my_noise_kicks.pkl', 'rb')) # load the pickl for the noise kicks for every run
 phaseKicks = noiseKicks[run_number]
 
 
@@ -208,19 +208,19 @@ for i in range(n_turns):
     posavg = np.mean(bunch.x[bunch.z > 0.0])
         
     #Amplitude Correction
-    posCorr = (posavg-negavg)/2
-    posCorr = posCorr + noise[i]
-    momCorr = (ampGain)*posCorr/beta_x[0]
-    delayAmp[0:-1] = delayAmp[1:]
-    delayAmp[numDelay] = momCorr
+    #posCorr = (posavg-negavg)/2
+    #posCorr = posCorr + noise[i]
+    #momCorr = (ampGain)*posCorr/beta_x[0]
+    #delayAmp[0:-1] = delayAmp[1:]
+    #delayAmp[numDelay] = momCorr
     #bunch.xp += delayAmp[0]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
     
     #Phase Correction
-    posCorr = (posavg+negavg)/2
-    posCorr = posCorr + noise[i]
-    momCorr = (phaseGain)*posCorr/beta_x[0]
-    delayPhase[0:-1] = delayPhase[1:]
-    delayPhase[numDelay] = momCorr
+    #posCorr = (posavg+negavg)/2
+    #posCorr = posCorr + noise[i]
+    #momCorr = (phaseGain)*posCorr/beta_x[0]
+    #delayPhase[0:-1] = delayPhase[1:]
+    #delayPhase[numDelay] = momCorr
     #bunch.xp += delayPhase[0]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
 
     if i%decTurns is  0:
