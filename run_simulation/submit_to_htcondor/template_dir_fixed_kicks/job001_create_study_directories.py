@@ -41,7 +41,7 @@ for noise_type in noise_types:
         
         if noise_type == 'AN':
             source = './templates/SPSheadtail_fixed_AmplitudeNoise_kick.py'
-            destination = '../AN_mytest{}/SPSheadtail_fixed_AmplitudeNoise_kick.py'.format(j)
+            destination = '../AN_mytest{}/SPSheadtail_CC_new_version_python.py'.format(j)
             shutil.copyfile(source, destination)
             replace(destination, '%run_number', '{}'.format(i)) # i cause the indeces of the list start from 0
 
@@ -49,7 +49,7 @@ for noise_type in noise_types:
  
         if noise_type == 'PN':
             source = './templates/SPSheadtail_fixed_PhaseNoise_kick.py'
-            destination = '../PN_mytest{}/SPSheadtail_fixed_PhaseNoise_kick.py'.format(j)
+            destination = '../PN_mytest{}/SPSheadtail_CC_new_version_python.py'.format(j)
             shutil.copyfile(source, destination)
             replace(destination, '%run_number', '{}'.format(i)) # i cause the indeces of the list start from 0
 
