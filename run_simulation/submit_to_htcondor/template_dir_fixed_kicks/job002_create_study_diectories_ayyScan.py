@@ -31,7 +31,7 @@ def replace(file_path, pattern, subst):
 noise_types =['AN', 'PN']
 
 # scan ayy
-ayy_min, ayy_max, num = 1e-15, 1e-11, 15
+ayy_min, ayy_max, num = 1e-15, 1e-11, 2#15
 ayy_scan = np.linspace(ayy_min, ayy_max, num)
 
 

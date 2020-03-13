@@ -180,7 +180,7 @@ emitY = np.zeros(n_damped_turns)
 
 run_number = %run_number
 
-noiseKicks = pickle.load(open('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/template_dir_fixed_kicks/my_noise_kicks.pkl', 'rb')) # load the pickl for the noise kicks for every run
+noiseKicks = pickle.load(open('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/template_dir_fixed_kicks/my_noise_kicks.pkl', 'rb'), encoding='latin1') # load the pickl for the noise kicks for every run
 phaseKicks = noiseKicks[run_number]
 
 
