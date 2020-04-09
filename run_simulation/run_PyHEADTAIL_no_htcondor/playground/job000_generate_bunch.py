@@ -19,7 +19,9 @@ bunch = generate_Gaussian6DTwiss(
 
 bunch.x += pp.xoffset
 bunch.y += pp.yoffset
+bunch.z = np.abs(bunch.z)
+bunch.dp = np.zeros(pp.macroparticlenumber)
 
-afile = open('bunch', 'wb')
+afile = open('input/bunch_3', 'wb')
 pickle.dump(bunch, afile)
 afile.close()

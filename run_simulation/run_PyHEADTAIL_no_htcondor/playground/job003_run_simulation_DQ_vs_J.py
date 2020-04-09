@@ -26,6 +26,17 @@ bfile = open('input/bunch', 'rb')
 bunch = pickle.load(bfile)
 bfile.close()
 
+# calculate initial actions
+Jx = 1 / 2 * (
+        (1 + pp.alpha_x ** 2) / pp.beta_x * bunch.x ** 2
+        + 2 * pp.alpha_x * bunch.x * bunch.xp
+        + pp.beta_x * bunch.xp ** 2)
+Jy = 1 / 2 * (
+        (1 + pp.alpha_y ** 2) / pp.beta_y * bunch.y ** 2
+        + 2 * pp.alpha_y * bunch.y * bunch.yp
+        + pp.beta_y * bunch.yp ** 2)
+
+
 bfile = open('input/ampKicks', 'rb')
 ampKicks = pickle.load(bfile)
 bfile.close()
@@ -34,19 +45,18 @@ bfile.close()
 X = []
 Y = []
 
+
 # 4. SET UP THE ACCELERATOR AND START TRACKING
 for i in range(n_turns):
 
-    #bunch.yp += ampKicks[i] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
+    bunch.yp += ampKicks[i] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
 
-    # The next two lines actually run the simulation
+    # The next  -1.1e-11two lines actually run the simulation
     for m in one_turn_map:
         m.track(bunch)
 
     X.append(bunch.x)
     Y.append(bunch.y)
-
-print('--> Tracking Done.')
 
 # 5. COMPUTE THE TUNE
 x_data = {}
@@ -55,46 +65,38 @@ y_data = {}
 for particle in range(pp.macroparticlenumber):
     x_data[particle] = []
     y_data[particle] = []
+# maybe even 100 turns are enough
 for particle in range(pp.macroparticlenumber):
     for turn in range(n_turns):
         x_data[particle].append(X[turn][particle])
         y_data[particle].append(Y[turn][particle])
 
-# Parameters for sliding window
-window_size = 50
-step = 10
+Qx_list = []
+Qy_list = []
 
-# Dictionaries for Qx, Qy. Each entry corresponds to one window
-Qx_dict = {}
-Qy_dict = {}
-
-print('--> Start computing tunes')
 
 for particle in range(pp.macroparticlenumber):
-    Qx_dict[particle] = []
-    Qy_dict[particle] = []
-    counter = 0
-    while True:
-        window_signal_x = x_data[particle][counter:window_size+counter]
-        window_signal_y = y_data[particle][counter:window_size + counter]
-        counter = counter + step
-        # Compute tune
-        Qx_dict[particle].append(pnf.get_tune(np.array(window_signal_x), 0))
-        Qy_dict[particle].append(pnf.get_tune(np.array(window_signal_y), 0))
-        if x_data[particle][-1] in window_signal_x:
-            break
+    signal_x = x_data[particle]
+    Qx_list.append(pnf.get_tune(np.array(signal_x), 0))
 
-plt.plot(np.arange(0, n_turns, n_turns/len(Qx_dict[0])), Qy_dict[0], '.', label='Qy')
-plt.plot(np.arange(0, n_turns, n_turns/len(Qx_dict[0])), Qx_dict[0], '.', label='Qx')
-plt.ylabel('Qx,y')
-plt.xlabel('turns')
-plt.grid()
-plt.legend()
-plt.show()
+    signal_y = y_data[particle]
+    Qy_list.append(pnf.get_tune(np.array(signal_y), 0))
 
 print('--> Computing tunes Done.')
+dataExport = [Qx_list, Qy_list]
 
-save_tunes = True
+save_tunes = False
 if save_tunes:
-    my_tunes = {'Qx': Qx_dict, 'Qy': Qy_dict}
-    pickle.dump(my_tunes, open('mytunes_noKick_window50.pkl', 'wb'))
+    f = open('mytunes_noTuneSpread_noAN_1e4.txt', 'w')
+    with f:
+        out = csv.writer(f, delimiter=',')
+        out.writerows(zip(*dataExport))
+
+plt.scatter(np.array(Jy)*1e9, Qy_list)
+plt.xlabel('Jy (nm)')
+plt.ylabel('Qy')
+plt.ylim(0.179, 0.1805)
+plt.tight_layout()
+plt.grid()
+#plt.savefig('Dqy_vs_Jy_AN_ayy0.png')
+plt.show()

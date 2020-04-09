@@ -25,6 +25,11 @@ bfile = open('input/bunch', 'rb')
 bunch = pickle.load(bfile)
 bfile.close()
 
+#z_temp = np.split(bunch.z, 2)[0]
+#z_temp_new = z_temp*(-1)
+#bunch.z = np.concatenate([z_temp, z_temp_new])
+
+
 bfile = open('input/ampKicks', 'rb')
 ampKicks = pickle.load(bfile)
 bfile.close()
@@ -34,7 +39,9 @@ meanX = []
 meanY = []
 emitX = []
 emitY = []
-
+emitY_2 = []
+emitY3 = []
+stdY = []
 # 4. Set up accelerator map and start tracking
 t0 = time.clock()
 for i in range(pp.n_turns):
@@ -48,35 +55,41 @@ for i in range(pp.n_turns):
     for m in one_turn_map:
         m.track(bunch)
 
-    if i % pp.decTurns is 0:
-        j = int(i / pp.decTurns)
-        meanX.append(np.mean(bunch.x))
-        meanY.append(np.mean(bunch.y))
-        emitX.append(bunch.epsn_x())
-        emitY.append(bunch.epsn_y())
+    meanX.append(np.mean(bunch.x))
+    stdY.append(np.std(bunch.y))
+    meanY.append(np.mean(bunch.y))
+    emitX.append(bunch.epsn_x())
+    emitY.append(bunch.epsn_y())
+    emitY_2.append((np.std(bunch.y)**2)/pp.beta_y)
+    yy = bunch.y-np.mean(bunch.y)
+    ypp = bunch.yp - np.mean(bunch.yp)
+    emitY3.append(np.sqrt(np.mean(yy**2)*np.mean(ypp**2)-np.mean(yy*ypp)**2))
 
 
 dataExport = [meanX, meanY, emitX, emitY]
 
-# Plotting
-plt.plot(emitY)
+sigma_y = 0.0007270874265680602
+plt.plot(np.array(meanY)/sigma_y,  c='b')
 plt.xlabel('turns')
-plt.ylabel('ey')
-plt.show()
-plt.close()
-plt.plot(emitX)
-plt.xlabel('turns')
-plt.xlabel('ey')
-plt.show()
-plt.close()
+plt.ylabel('<y>/sigma_y)')
+plt.tight_layout()
+plt.grid()
 plt.show()
 
-save_tbt = True
-if save_tbt:
-    f = open('output/ayy0_axx_AN_emit.txt', 'w')
-    with f:
-        out = csv.writer(f, delimiter=',')
-        out.writerows(zip(*dataExport))
+plt.plot(emitY, c='b', label='pyheadtail method')
+plt.plot(np.array(emitY3)*pp.beta*pp.gamma, c='r', label='method 2')
+plt.legend()
+plt.xlabel('turns')
+plt.ylabel('ey')
+plt.tight_layout()
+plt.grid()
+plt.show()
+
+quit()
+f = open('test1.txt', 'w')
+with f:
+    out = csv.writer(f, delimiter=',')
+    out.writerows(zip(*dataExport))
 
 print('--> Done.')
 
