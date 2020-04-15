@@ -11,10 +11,6 @@ y = np.random.normal(mu, sigma, n_points)
 # Cumulative kicks
 yy = np.array([np.sum(y[:i]) for i in range(n_points)])
 
-
-# my signal
-
-
 # Frequency bins for given FFT parameters.
 freq = np.fft.fftfreq(y.shape[-1])
 

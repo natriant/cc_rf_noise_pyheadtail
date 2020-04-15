@@ -1,8 +1,7 @@
 import simulation_parameters as pp
-from scipy.constants import m_p, c, e
+from scipy.constants import e
 import numpy as np
 import pickle
-from PyHEADTAIL.particles.slicing import UniformBinSlicer
 from PyHEADTAIL.particles.generators import generate_Gaussian6DTwiss
 
 

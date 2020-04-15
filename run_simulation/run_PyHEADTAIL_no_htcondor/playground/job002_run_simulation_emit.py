@@ -39,7 +39,7 @@ emitY = []
 t0 = time.clock()
 for i in range(pp.n_turns):
     # Gaussian Amplitude noise
-    bunch.yp += ampKicks[i] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
+    bunch.yp += ampKicks[i] #* np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
 
     # Gaussian Phase noise
     # bunch.yp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
@@ -62,16 +62,18 @@ dataExport = [meanX, meanY, emitX, emitY]
 plt.plot(emitY)
 plt.xlabel('turns')
 plt.ylabel('ey')
+plt.tight_layout()
+plt.grid()
 plt.show()
-plt.close()
 plt.plot(emitX)
 plt.xlabel('turns')
-plt.xlabel('ey')
+plt.ylabel('ex')
 plt.show()
 plt.close()
 plt.show()
 
-save_tbt = True
+
+save_tbt = False
 if save_tbt:
     f = open('output/ayy0_axx_AN_emit.txt', 'w')
     with f:

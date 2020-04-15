@@ -40,7 +40,7 @@ Y = []
 # 4. SET UP THE ACCELERATOR AND START TRACKING
 for i in range(n_turns):
 
-    #bunch.yp += ampKicks[i] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
+    bunch.yp += ampKicks[i] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
 
     # The next two lines actually run the simulation
     for m in one_turn_map:
@@ -64,6 +64,8 @@ freqs_qx = np.fft.fftfreq(len(fourier_qx))
 
 fig, ax = plt.subplots()
 plt.plot(freqs_qx, 2*abs(fourier_qx) / len(fourier_qx), 'o', label='Qx')#, label='FFT whole signal')
-plt.plot(freqs_qx, 1/(freqs_qx**2), c = 'k')
+#plt.plot(freqs_qx, fourier_qx, 'o', label='Qx')#, label='FFT whole signal')
+#plt.plot(freqs_qx, 1/(freqs_qx**2), c='k')
+plt.plot(freqs_qx, 1e-18/(freqs_qx**2), c = 'r')
 plt.yscale('log')
 plt.show()

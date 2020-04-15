@@ -49,7 +49,7 @@ Y = []
 # 4. SET UP THE ACCELERATOR AND START TRACKING
 for i in range(n_turns):
 
-    bunch.yp += ampKicks[i] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
+    bunch.yp += ampKicks[i] #* np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)
 
     # The next  -1.1e-11two lines actually run the simulation
     for m in one_turn_map:
@@ -74,13 +74,15 @@ for particle in range(pp.macroparticlenumber):
 Qx_list = []
 Qy_list = []
 
-
 for particle in range(pp.macroparticlenumber):
     signal_x = x_data[particle]
     Qx_list.append(pnf.get_tune(np.array(signal_x), 0))
 
     signal_y = y_data[particle]
     Qy_list.append(pnf.get_tune(np.array(signal_y), 0))
+
+print(np.std(Qy_list))
+print(np.std(Qx_list))
 
 print('--> Computing tunes Done.')
 dataExport = [Qx_list, Qy_list]
@@ -98,5 +100,5 @@ plt.ylabel('Qy')
 plt.ylim(0.179, 0.1805)
 plt.tight_layout()
 plt.grid()
-#plt.savefig('Dqy_vs_Jy_AN_ayy0.png')
+plt.savefig('Dqy_vs_Jy_AN_ayy0.png')
 plt.show()
