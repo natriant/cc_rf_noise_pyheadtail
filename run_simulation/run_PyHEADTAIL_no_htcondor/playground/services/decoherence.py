@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 
 signals1 = []
 signals2 = []
-#freq_list1 = [2.05, 2.1, 2.15, 2.5]
+# freq_list1 = [2.05, 2.1, 2.15, 2.5]
 freq_list1 = np.arange(2.05, 10000.05, 0.5)
-print(len(freq_list1))
-
-#freq_list2 = np.arange(0, 10, 0.5)  # smaller tune spread
-
+#freq_list1 = np.linspace(2.05, 2.5, 10)
+freq_list1 = np.arange(2.05, 10000.05, 500)
+#freq_list1 = np.arange(2.05, 2.5, 0.005)  # smaller tune spread
+print(freq_list1)
 Fs = 1000
-sample = 10000
+sample = 1000
 t = np.arange(sample)
 
 for f in freq_list1:
