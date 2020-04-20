@@ -1,37 +1,26 @@
+# inspired by : https://www.ritchievink.com/blog/2017/04/23/understanding-the-fourier-transform-by-example/
 import numpy as np
 import matplotlib.pyplot as plt
 
+freq_list = [2.05, 2.1, 2.15,2.2]
+freq_list = np.arange(2.05, 5.05, 0.5)
+t = np.linspace(0, 10, 500)  # Number of sample points
 
-signals1 = []
-signals2 = []
-# freq_list1 = [2.05, 2.1, 2.15, 2.5]
-freq_list1 = np.arange(2.05, 10000.05, 0.5)
-#freq_list1 = np.linspace(2.05, 2.5, 10)
-freq_list1 = np.arange(2.05, 10000.05, 500)
-#freq_list1 = np.arange(2.05, 2.5, 0.005)  # smaller tune spread
-print(freq_list1)
-Fs = 1000
-sample = 1000
-t = np.arange(sample)
+signals = []
 
-for f in freq_list1:
-    y = np.cos(2 * np.pi * f * t / Fs)
-    signals1.append(y)
-    #plt.plot(t, y)#, label='freq={}'.format(f))
-#for f in freq_list2:
-#    y = np.sin(2 * np.pi * f * t / Fs)
-#    signals2.append(y)
-    # plt.plot(t, y, label='freq={}'.format(f))
+for freq in freq_list:
+    s = np.cos(2 * np.pi * freq * t) # + 0.5 * np.sin(90 * 2 * np.pi * t)
+    signals.append(s)
+    # plt.plot(t, s, label='freq={} Hz'.format(freq))
 
-y_mean1 = sum(signals1)/len(freq_list1)
-#y_mean2 = sum(signals2)/len(freq_list2)
+y_mean1 = sum(signals)/len(freq_list)
+plt.plot(t, y_mean1, c='k', linewidth=5, label='average wave, {} freqs'.format(len(freq_list)))
 
-plt.plot(t, y_mean1, c='k', linewidth=5, label='mean {} freqs'.format(len(freq_list1)))
-#plt.plot(t, y_mean2, c='r', linewidth=2, label='mean 20 freqs')
-plt.xlabel('time (s)')
-plt.ylabel('voltage(V)')
-plt.legend()
+
+plt.ylabel("Amplitude")
+plt.xlabel("Time [s]")
 plt.grid()
+plt.legend()
 plt.tight_layout()
-#plt.savefig('cos_signals_decoherence.png')
+plt.savefig('decoherence_2fres.png')
 plt.show()
