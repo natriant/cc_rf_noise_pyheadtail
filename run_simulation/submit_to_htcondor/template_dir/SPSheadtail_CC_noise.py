@@ -22,8 +22,8 @@ from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(1e5)            # number of cycles to run the simulation for
-decTurns = int(100)               # how often to record data
+n_turns = int(1e3)            # number of cycles to run the simulation for
+decTurns = int(1)               # how often to record data
 
 ampGain = 0               #strength of amplitude feedback (usually between 0 and 0.15)
 phaseGain = 0             #strength of phase feedback (usually between 0 and 0.15)
@@ -185,7 +185,6 @@ file2 = open('bunch', 'rb')
 bunch = pickle.load(file2)
 file2.close()
 
-print('--> Begin tracking...')
 print('--> Begin tracking...')
 one_turn_map = []
 for i, segment in enumerate(transverse_map):
