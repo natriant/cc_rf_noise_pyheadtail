@@ -22,8 +22,8 @@ from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(1e5)            #number of cycles to run the simulation for
-decTurns =int(100)               #how often to record data
+n_turns = int(1e5)            # number of cycles to run the simulation for
+decTurns =int(100)               # how often to record data
 
 Q_x = 26.13 #18                 #How many times the particles oscillate in phase space each turn 
                             # Will need it to be 16.25 IF CC feedback is used
