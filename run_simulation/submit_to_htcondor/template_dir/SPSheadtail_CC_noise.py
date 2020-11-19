@@ -22,24 +22,24 @@ from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(1e3)            # number of cycles to run the simulation for
-decTurns = int(1)               # how often to record data
+n_turns = int(1e5)            # number of cycles to run the simulation for
+decTurns = int(100)               # how often to record data
 
-ampGain = 0               #strength of amplitude feedback (usually between 0 and 0.15)
-phaseGain = 0             #strength of phase feedback (usually between 0 and 0.15)
+ampGain = 0  # strength of amplitude feedback (usually between 0 and 0.15)
+phaseGain = 0  # strength of phase feedback (usually between 0 and 0.15)
 
-filename = 'file.txt'      #Where the data for the run is saved
+filename = 'file.txt'  # Where the data for the run is saved
 
-numDelay = 1                #Turns of delay between measuring and acting with the feedback system
-                            #Make sure to adjust Q_x if adjusting numDelay
+numDelay = 1 #Turns of delay between measuring and acting with the feedback system
+            #Make sure to adjust Q_x if adjusting numDelay
 
-ampNoiseOn = 0              #Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 1            #Turns on the phase noise - 0 is off, 1 is on
-stdAmpNoise = 1e-8          #Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
-stdPhaseNoise = 1e-8      #Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
+ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
+phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
+stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
+stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
-damperOn = 0                #Turns on the damper - 0 is off, 1 is on
-dampingrate_x = 50          #Strength of the damper (note it must be turned on further down in the code) 
+damperOn = 0  # Turns on the damper - 0 is off, 1 is on
+dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
 wakefieldOn = 0            # Turns on the wakefields
