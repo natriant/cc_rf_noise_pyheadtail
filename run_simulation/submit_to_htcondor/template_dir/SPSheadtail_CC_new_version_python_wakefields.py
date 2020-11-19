@@ -42,7 +42,7 @@ damperOn = 0                #Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50          #Strength of the damper (note it must be turned on further down in the code) 
                             #(40 is the "standard" value)
 
-wakefieldOn = 1            # Turns on the wakefields
+wakefieldOn = 0            # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -182,10 +182,14 @@ bunch = pickle.load(file2)
 file2.close()
 
 print('--> Begin tracking...')
-if damperOn == 1:
-    one_turn_map = [transverse_map[0]] + [longitudinal_map] + [damper]
-else:
-    one_turn_map = [transverse_map[0]] + [longitudinal_map]
+print('--> Begin tracking...')
+one_turn_map = []
+for i, segment in enumerate(transverse_map):
+    one_turn_map.append(segment)
+    if wakefieldOn:
+        if i+1 == i_wake:
+            one_turn_map.append(wake_field_kicker)
+one_turn_map.append(longitudinal_map)
 
 n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the data are damped.
                        # We want this number as an integer, so it can be used in the next functions. 
@@ -200,7 +204,7 @@ for i in range(n_turns):
     
     # Crab cavity
     Vcc = 1e6
-    p_cc = Vcc/(gamma*.938e9) # Vo/Eb
+    p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
     #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
 
     # Gaussian Amplitude noise
