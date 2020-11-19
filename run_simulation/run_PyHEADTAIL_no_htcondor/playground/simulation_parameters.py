@@ -24,12 +24,12 @@ alpha_y = 1.898525134 * np.ones(n_segments)
 beta_y = 76.07315729*np.ones(n_segments)
 D_y = 0 * np.ones(n_segments)
 
-Qp_x = 2.
-Qp_y = 2.
+Qp_x = 0.
+Qp_y = 0.
 
-app_x = 179.3585107  # -1.1e-11  # 2*-6.1333e-13#179.3610966
-app_xy = -441.3397664
-app_y = -30.78659311
+app_x = 0.0 #179.3585107  # -1.1e-11  # 2*-6.1333e-13#179.3610966
+app_xy = 0.0 #-441.3397664
+app_y = 0.0 #-30.78659311
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -43,7 +43,7 @@ p_increment = 0 * e / c * circumference / (beta * c)
 
 # BEAM PARAMETERS
 # ===========
-macroparticlenumber = 900 #10000
+macroparticlenumber = 100000
 
 charge = e
 mass = m_p
@@ -54,7 +54,6 @@ eta = alpha - 1 / gamma ** 2
 beta_z = np.abs(eta) * R / Q_s
 epsn_x = 2e-6  # m
 epsn_y = 2e-6
-epsn_z = 2.5
 sigma_z = 0.155  # 2*0.0755
 
 xoffset = 0e-4
