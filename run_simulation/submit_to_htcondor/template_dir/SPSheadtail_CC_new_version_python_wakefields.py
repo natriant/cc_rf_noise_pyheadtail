@@ -60,7 +60,7 @@ circumference = 6911.5623
 frev = 299792458/circumference
 
 
-# CREATE TRANSVERSE MAP
+# PARAMETERS FOR TRANSVERSE MAP
 # =====================
 n_segments = 2
 s = np.arange(0, n_segments+1)*circumference/n_segments
@@ -79,17 +79,12 @@ beta_y[i_wake] = 54.51
 Q_x, Q_y = 26.13, 26.18
 Qp_x, Qp_y = 0, 0 #10
 
-# detuning coefficients
-app_x = 2.4705e-15 #4e-11
-app_y = -7.31-14 #0*3e-11
-app_xy = -0*2.25e-11
+# detuning coefficients in (1/m)
+app_x = 0.0  #2.4705e-15 #4e-11
+app_xy = 0.0 #-0*2.25e-11
+app_y = 15000  #-7.31-14 #0*3e-11
 
-
-transverse_map = TransverseMap(s, alpha_x, beta_x, D_x, alpha_y, beta_y, D_y, Q_x, Q_y,
-    [Chromaticity(Qp_x, Qp_y),
-    AmplitudeDetuning(app_x, app_y, app_xy)]) 
-
-# CREATE LONGITUDINAL MAP
+# PARAMETERS FOR LONGITUDINAL MAP
 # =======================
 alpha = 1.9e-3
 Q_s = 0.0035
@@ -97,8 +92,6 @@ h1, h2 = 4620, 9240
 V1, V2 = 4.5e6, 0e6
 dphi1, dphi2 = 0, np.pi
 p_increment = 0 * e/c * circumference/(beta*c)
-
-longitudinal_map = LinearMap([alpha], circumference, Q_s)
 
 # CREATE DAMPER
 # =============
@@ -142,7 +135,7 @@ pickle.dump(bunch, afile)
 afile.close()
 
 # SLICER FOR WAKEFIELDS
-# ============
+# =====================
 n_slices = 50 # 500
 slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma_z))#,circumference=circumference, h_bunch=h1)
 
@@ -153,6 +146,17 @@ wakefile1 = ('kickerSPSwake_2020_oldMKP.wake')
 ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
 
 wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
+
+# CREATE TRANSVERSE AND LONGITUDINAL MAPS
+# =======================================
+scale_factor = 2*bunch.p0  # scale the detuning coefficients in pyheadtail units
+transverse_map = TransverseMap(s, alpha_x, beta_x, D_x, alpha_y, beta_y, D_y, Q_x, Q_y,
+    [Chromaticity(Qp_x, Qp_y),
+    AmplitudeDetuning(app_x*scale_factor, app_y*scale_factor, app_xy*scale_factor)])
+
+longitudinal_map = LinearMap([alpha], circumference, Q_s)
+
+
 
 # ======================================================================
 # SET UP ACCELERATOR MAP AND START TRACKING
