@@ -3,7 +3,6 @@ from __future__ import division
 import os, sys, time
 import h5py as hp
 import numpy as np
-import matplotlib.pyplot as plt
 import csv
 import pickle
 import scipy
@@ -34,7 +33,7 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
             #Make sure to adjust Q_x if adjusting numDelay
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
+phaseNoiseOn = 0  # Turns on the phase noise - 0 is off, 1 is on
 stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
@@ -42,7 +41,7 @@ damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 0            # Turns on the wakefields
+wakefieldOn = 1            # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -87,9 +86,9 @@ app_y = 15000  #-7.31-14 #0*3e-11
 # PARAMETERS FOR LONGITUDINAL MAP
 # =======================
 alpha = 1.9e-3
-Q_s = 0.0035
+Q_s = 0.0051 #35
 h1, h2 = 4620, 9240
-V1, V2 = 4.5e6, 0e6
+V1, V2 = 5.008e6, 0e6
 dphi1, dphi2 = 0, np.pi
 p_increment = 0 * e/c * circumference/(beta*c)
 
@@ -142,7 +141,7 @@ slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma
 # WAKEFIELD
 # ==========
 n_turns_wake = 1 # for the moment we consider that the wakefield decays after 1 turn
-wakefile1 = ('kickerSPSwake_2020_oldMKP.wake')
+wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/kickerSPSwake_2020_oldMKP.wake')
 ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
 
 wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
@@ -261,3 +260,5 @@ with f:
 print('--> Done.')
 
 print("Simulation time in seconds: " + str(time.clock() - t0))
+
+
