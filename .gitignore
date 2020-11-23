@@ -1,7 +1,7 @@
-/data
+data
 setup_environment.sh
-/post_process_analysis/input
-/home/natalia/PhD_projects/cc_rf_noise_pyheadtail/run_simulation/run_PyHEADTAIL_no_htcondor/playground/input/*
-/home/natalia/PhD_projects/cc_rf_noise_pyheadtail/run_simulation/run_PyHEADTAIL_no_htcondor/playground/output/*
-/home/natalia/PhD_projects/cc_rf_noise_pyheadtail/run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/kickerSPSwake_2020_oldMKP.wake
-/home/natalia/PhD_projects/cc_rf_noise_pyheadtail/run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/*newkickers*
+post_process_analysis/input
+run_simulation/run_PyHEADTAIL_no_htcondor/playground/input/*
+run_simulation/run_PyHEADTAIL_no_htcondor/playground/output/*
+run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/kickerSPSwake_2020_oldMKP.wake
+run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/*newkickers*
