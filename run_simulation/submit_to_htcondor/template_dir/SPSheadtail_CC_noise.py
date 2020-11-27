@@ -86,7 +86,7 @@ app_y = 15000  #-7.31-14 #0*3e-11
 # PARAMETERS FOR LONGITUDINAL MAP
 # =======================
 alpha = 1.9e-3
-Q_s = 0.0051 #35
+Q_s = 0.0051
 h1, h2 = 4620, 9240
 V1, V2 = 5.008e6, 0e6
 dphi1, dphi2 = 0, np.pi
