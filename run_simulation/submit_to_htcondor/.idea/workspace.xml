@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="b9708011-7db9-44b0-bdfc-f1dc212e44b0" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/.ipynb_checkpoints/job003_save_dey_for_scans_over_variable-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/job003_save_dey_for_scans_over_variable.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/scripts_before_Nov2020/emittance_growth_rate_vs_tune_spread_sets_001.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../../post_process_analysis/scripts_before_Nov2020/emittance_growth_rate_vs_tune_spread_sets_001.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../run_PyHEADTAIL_no_htcondor/.ipynb_checkpoints/Untitled-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../run_PyHEADTAIL_no_htcondor/SPSheadtail_calculate_detuning_coefficients.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../run_PyHEADTAIL_no_htcondor/SPSheadtail_calculate_detuning_coefficients.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/template_dir/SPSheadtail_CC_noise.py" beforeDir="false" afterPath="$PROJECT_DIR$/template_dir/SPSheadtail_CC_noise.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="JupyterTrust" id="bc041d38-33b7-4bf5-9c64-537b8660defc" />
+  <component name="ProjectId" id="1ksQQBAXCzT99d5JhW31OLtrzsJ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/template_dir/secondary_scripts" />
+    </key>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="b9708011-7db9-44b0-bdfc-f1dc212e44b0" name="Default Changelist" comment="" />
+      <created>1606486800211</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1606486800211</updated>
+      <workItem from="1606486804950" duration="246000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+</project>

@@ -1,11 +1,9 @@
 from __future__ import division
 
-import os, sys, time
-import h5py as hp
+import time
 import numpy as np
 import csv
 import pickle
-import scipy
 from scipy.constants import m_p, c, e
 
 from PyHEADTAIL.particles.slicing import UniformBinSlicer
