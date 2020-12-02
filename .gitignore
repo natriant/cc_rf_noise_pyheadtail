@@ -5,3 +5,4 @@ run_simulation/run_PyHEADTAIL_no_htcondor/playground/input/*
 run_simulation/run_PyHEADTAIL_no_htcondor/playground/output/*
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/kickerSPSwake_2020_oldMKP.wake
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/*newkickers*
+/post_process_analysis/studies_with_sets_of_kicks/*.pkl
