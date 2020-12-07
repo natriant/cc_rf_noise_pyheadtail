@@ -1,9 +1,11 @@
 from __future__ import division
 
-import time
+import os, sys, time
+import h5py as hp
 import numpy as np
 import csv
 import pickle
+import scipy
 from scipy.constants import m_p, c, e
 
 from PyHEADTAIL.particles.slicing import UniformBinSlicer
@@ -31,7 +33,7 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
             #Make sure to adjust Q_x if adjusting numDelay
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 0  # Turns on the phase noise - 0 is off, 1 is on
+phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
 stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
@@ -39,7 +41,7 @@ damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 1            # Turns on the wakefields
+wakefieldOn = 0           # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -70,8 +72,10 @@ beta_y = 73.81671646 * np.ones(n_segments)
 D_y = 0 * np.ones(n_segments)
 
 i_wake = 1
-beta_x[i_wake] = 54.65
-beta_y[i_wake] = 54.51
+# beta_x[i_wake] = 54.65 #### (for Q20)
+# beta_y[i_wake] = 54.51 #### (for Q20)
+beta_x[i_wake] = 42.0941 #### (for Q26)
+beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
 Qp_x, Qp_y = 0, 0 #10
@@ -79,12 +83,13 @@ Qp_x, Qp_y = 0, 0 #10
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
 app_xy = 0.0 #-0*2.25e-11
-app_y = 15000  #-7.31-14 #0*3e-11
+app_y = 0.0 #15000  #-7.31-14 #0*3e-11
+
 
 # PARAMETERS FOR LONGITUDINAL MAP
 # =======================
 alpha = 1.9e-3
-Q_s = 0.0051
+Q_s = 0.0051 #35
 h1, h2 = 4620, 9240
 V1, V2 = 5.008e6, 0e6
 dphi1, dphi2 = 0, np.pi
@@ -97,7 +102,7 @@ damper = TransverseDamper(dampingrate_x, dampingrate_y)
 
 # CREATE BEAM
 # ===========
-macroparticlenumber = 100000
+macroparticlenumber = int(5e5) # 100000
 
 charge = e
 mass = m_p
@@ -133,13 +138,13 @@ afile.close()
 
 # SLICER FOR WAKEFIELDS
 # =====================
-n_slices = 50 # 500
+n_slices = 500 # 500
 slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma_z))#,circumference=circumference, h_bunch=h1)
 
 # WAKEFIELD
 # ==========
 n_turns_wake = 1 # for the moment we consider that the wakefield decays after 1 turn
-wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/kickerSPSwake_2020_oldMKP.wake')
+wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/newkickers_Q26_2018_modified.txt')
 ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
 
 wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
