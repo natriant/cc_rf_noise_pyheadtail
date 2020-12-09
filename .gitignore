@@ -7,3 +7,5 @@ run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/kickerSPSwake_2020_o
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/*newkickers*
 /post_process_analysis/studies_with_sets_of_kicks/*.pkl
 post_process_analysis/studies_with_sets_of_kicks/bunch
+post_process_analysis/studies_with_sets_of_kicks/output/*
+
