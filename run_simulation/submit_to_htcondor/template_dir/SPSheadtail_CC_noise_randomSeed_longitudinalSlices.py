@@ -18,16 +18,58 @@ from PyHEADTAIL.feedback.transverse_damper import TransverseDamper
 from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 
 
+#=========================================================
+#               Useful functions
+#=========================================================
+def calculate_emittances(x,px,y,py,sigma,delta,beta_gamma=1): # p.189
+    delta_square = delta*delta
+    mean_delta_square = np.mean(delta_square)
+    def emittance(u,up):
+        mean_u_delta = np.mean(u*delta)
+        mean_up_delta = np.mean(up*delta)
+        uu = np.mean(u*u) - mean_u_delta**2/mean_delta_square
+        uup = np.mean(u*up) - mean_u_delta*mean_up_delta/mean_delta_square
+        upup = np.mean(up*up) - mean_up_delta**2/mean_delta_square
+        return np.sqrt(uu*upup - uup**2)*beta_gamma
+    return emittance(x,px), emittance(y,py)
+
+def get_values_per_slice(particle_coordinates, parts_id):
+    value = lambda index: particle_coordinates[index]
+    values_per_slice = lambda slice_indices: list(map(value, slice_indices))
+    return list(map(values_per_slice, parts_id))
+
+def emittance_per_slice(bunch):
+    x_per_slice = np.array(get_values_per_slice(bunch.x, parts_id))
+    y_per_slice = np.array(get_values_per_slice(bunch.y, parts_id))
+    xp_per_slice = np.array(get_values_per_slice(bunch.xp, parts_id))
+    yp_per_slice = np.array(get_values_per_slice(bunch.yp, parts_id))
+    z_per_slice = np.array(get_values_per_slice(bunch.z, parts_id))
+    dp_per_slice = np.array(get_values_per_slice(bunch.dp, parts_id))
+
+    neps_x = []
+    neps_y = []
+    for i in range(0, len(x_per_slice)):
+        neps_x_temp, neps_y_temp = calculate_emittances(
+            np.array(x_per_slice[i]),
+            np.array(xp_per_slice[i]),
+            np.array(y_per_slice[i]),
+            np.array(yp_per_slice[i]),
+            np.array(z_per_slice[i]),
+            np.array(dp_per_slice[i]), beta*gamma)
+        neps_x.append(neps_x_temp)
+        neps_y.append(neps_y_temp)
+    return neps_x, neps_y
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(1e5)            # number of cycles to run the simulation for
-decTurns = int(100)               # how often to record data
+
+n_turns = int(1e5)  # number of cycles to run the simulation for
+decTurns = int(100)  # how often to record data
 
 ampGain = 0  # strength of amplitude feedback (usually between 0 and 0.15)
 phaseGain = 0  # strength of phase feedback (usually between 0 and 0.15)
 
-filename = 'file.txt'  # Where the data for the run is saved
+filename = 'file'  # Where the data for the run is saved
 
 numDelay = 1 #Turns of delay between measuring and acting with the feedback system
             #Make sure to adjust Q_x if adjusting numDelay
@@ -41,10 +83,10 @@ damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 0          # Turns on the wakefields
+wakefieldOn = 1          # Turns on the wakefields
 
-measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
-stdMeasNoise = 1000e-9       # standard deviation of measurement noise
+measNoiseOn = 0  # Turns on the measurement noise - 0 is off, 1 is on
+stdMeasNoise = 1000e-9 # standard deviation of measurement noise
 
 
 
@@ -83,7 +125,7 @@ Qp_x, Qp_y = 1.0, 1.0 #10
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
 app_xy = 0.0 #-0*2.25e-11
-app_y = %ayy #15000  #-7.31-14 #0*3e-11
+app_y = 4000.0 #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -144,7 +186,6 @@ slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma
 # WAKEFIELD
 # ==========
 n_turns_wake = 1 # for the moment we consider that the wakefield decays after 1 turn
-#wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/newkickers_Q26_2018_modified.txt')
 wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/SPS_complete_wake_model_2018_Q26.txt')
 ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
 # only dipolar kick
@@ -153,11 +194,11 @@ ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'qua
 #ww1.wake_table['quadrupole_y'] = np.zeros(my_length)
 
 # only quadrupolar kick
-my_length = len(ww1.wake_table['dipole_x'])
-ww1.wake_table['dipole_x'] = np.zeros(my_length)
-ww1.wake_table['dipole_y'] = np.zeros(my_length)
+#my_length = len(ww1.wake_table['dipole_x'])
+#ww1.wake_table['dipole_x'] = np.zeros(my_length)
+#ww1.wake_table['dipole_y'] = np.zeros(my_length)
 
-wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
+wake_field_complete = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
 
 # CREATE TRANSVERSE AND LONGITUDINAL MAPS
 # =======================================
@@ -166,7 +207,7 @@ transverse_map = TransverseMap(s, alpha_x, beta_x, D_x, alpha_y, beta_y, D_y, Q_
     [Chromaticity(Qp_x, Qp_y),
     AmplitudeDetuning(app_x*scale_factor, app_y*scale_factor, app_xy*scale_factor)])
 
-longitudinal_map = LinearMap([alpha], circumference, Q_s)
+#longitudinal_map = LinearMap([alpha], circumference, Q_s)
 
 
 
@@ -208,20 +249,21 @@ for i, segment in enumerate(transverse_map):
     one_turn_map.append(segment)
     if wakefieldOn:
         if i+1 == i_wake:
-            one_turn_map.append(wake_field_kicker)
-one_turn_map.append(longitudinal_map)
+            one_turn_map.append(wake_field_complete)
+#one_turn_map.append(longitudinal_map)
 
 n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the data are damped.
                        # We want this number as an integer, so it can be used in the next functions. 
-meanX = np.zeros(n_damped_turns)
-meanY = np.zeros(n_damped_turns)
-meanXsq = np.zeros(n_damped_turns)
-meanYsq = np.zeros(n_damped_turns)
-emitX = np.zeros(n_damped_turns)
-emitY = np.zeros(n_damped_turns)
-    
+
+
+parts_id = []
+my_sliceSet = bunch.get_slices(slicer_for_wakefields) # type; PyHEADTAIL.particles.slicing.SliceSet
+for my_slice in np.arange(my_sliceSet.n_slices):
+    parts_id.append(list(my_sliceSet.particle_indices_of_slice(slice_index=my_slice)))
+
+neps_x_list, neps_y_list = [], []
+
 for i in range(n_turns):
-    
     # Crab cavity
     Vcc = 1e6
     p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
@@ -262,20 +304,16 @@ for i in range(n_turns):
 
     if i%decTurns is  0:
         j = int(i/decTurns)
-        meanX[j] = np.mean(bunch.x)
-        meanY[j] = np.mean(bunch.y)
-        meanXsq[j] = np.mean((bunch.x-np.mean(bunch.x))**2)
-        meanYsq[j] = np.mean((bunch.y-np.mean(bunch.y))**2)
-        emitX[j] = bunch.epsn_x()
-        emitY[j] = bunch.epsn_y()
+        emittance_per_slice(bunch)
+        neps_x_current, neps_y_current = emittance_per_slice(bunch)
+        neps_x_list.append(neps_x_current)
+        neps_y_list.append(neps_y_current)
 
-dataExport = [meanX, meanY, meanXsq, meanYsq, emitX, emitY]
 
-f = open(filename, 'w')
+with open(f'{filename}.pkl', 'wb') as ff:
+        pickle.dump(neps_y_list, ff, pickle.HIGHEST_PROTOCOL)
+ff.close()
 
-with f:
-    out = csv.writer(f, delimiter=',')
-    out.writerows(zip(*dataExport))
 
 print('--> Done.')
 

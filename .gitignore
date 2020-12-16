@@ -3,9 +3,12 @@ setup_environment.sh
 post_process_analysis/input
 run_simulation/run_PyHEADTAIL_no_htcondor/playground/input/*
 run_simulation/run_PyHEADTAIL_no_htcondor/playground/output/*
-run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/kickerSPSwake_2020_oldMKP.wake
+run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/from_Xavier/kickerSPSwake_2020_oldMKP.wake
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/*newkickers*
 /post_process_analysis/studies_with_sets_of_kicks/*.pkl
 post_process_analysis/studies_with_sets_of_kicks/bunch
 post_process_analysis/studies_with_sets_of_kicks/output/*
+run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/SPS_complete_wake_model_2018_Q26
+run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/file.pkl
+
 
