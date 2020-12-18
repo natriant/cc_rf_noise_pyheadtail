@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b9708011-7db9-44b0-bdfc-f1dc212e44b0" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/template_dir/SPSheadtail_CC_noise_randomSeed_longitudinalSlices.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/.ipynb_checkpoints/job003a_save2pickle_dex_dey_scanayy_mutlipleSers_meanOverruns-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/.ipynb_checkpoints/job003a_save2pickle_dex_dey_scanayy_mutlipleSers_meanOverruns-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/job003a_save2pickle_dex_dey_scanayy_mutlipleSers_meanOverruns.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/job003a_save2pickle_dex_dey_scanayy_mutlipleSers_meanOverruns.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../run_PyHEADTAIL_no_htcondor/impedance_studies/from_Xavier/SPS_Complete_imp_model_2018_Q26 (3).txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../run_PyHEADTAIL_no_htcondor/impedance_studies/wall_Q26_2018.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/template_dir/SPSheadtail_CC_noise_randomSeed.py" beforeDir="false" afterPath="$PROJECT_DIR$/template_dir/SPSheadtail_CC_noise_randomSeed.py" afterDir="false" />
-    </list>
+    <list default="true" id="b9708011-7db9-44b0-bdfc-f1dc212e44b0" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -50,7 +42,7 @@
       <option name="presentableId" value="Default" />
       <updated>1606486800211</updated>
       <workItem from="1606486804950" duration="1296000" />
-      <workItem from="1608144351857" duration="1085000" />
+      <workItem from="1608144351857" duration="1373000" />
     </task>
     <servers />
   </component>
