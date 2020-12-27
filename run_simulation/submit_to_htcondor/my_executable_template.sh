@@ -11,6 +11,7 @@ export PATH=$MYPYTHON/bin:$PATH
 echo "which python:" `which python`
 
 
-#python /afs/cern.ch/work/n/natriant/private/linear_map_htcondor/test5/script.py
-python $DIR/%index1/SPSheadtail_CC_new_version_python.py
-#python $DIR/%index1/SPSheadtail_CC_new_emittance_calcualtion.py
+date
+#python $DIR/%index1/SPSheadtail_CC_noise.py
+python $DIR/%index1/SPSheadtail_CC_noise_randomSeed.py
+date
