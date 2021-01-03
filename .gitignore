@@ -12,5 +12,6 @@ run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/SPS_complete_wake_mo
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/file.pkl
 post_process_analysis/file.pkl
 post_process_analysis/*.png
+post_process_analysis/bunch
 
 
