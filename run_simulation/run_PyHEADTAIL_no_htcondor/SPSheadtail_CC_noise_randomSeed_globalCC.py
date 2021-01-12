@@ -21,8 +21,8 @@ from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = 10000 # int(1e5)            # number of cycles to run the simulation for
-decTurns = 10#int(100)               # how often to record data
+n_turns = int(1e5)            # number of cycles to run the simulation for
+decTurns = int(100)               # how often to record data
 
 ampGain = 0  # strength of amplitude feedback (usually between 0 and 0.15)
 phaseGain = 0  # strength of phase feedback (usually between 0 and 0.15)
@@ -41,7 +41,7 @@ damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 0         # Turns on the wakefields
+wakefieldOn = 1         # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -83,7 +83,7 @@ Qp_x, Qp_y = 1.0, 1.0 #10
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
 app_xy = 0.0 #-0*2.25e-11
-app_y = 15000 #%ayy #15000  #-7.31-14 #0*3e-11
+app_y = %ayy #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -102,7 +102,7 @@ damper = TransverseDamper(dampingrate_x, dampingrate_y)
 
 # CREATE BEAM
 # ===========
-macroparticlenumber = int(20e3) #int(5e5) # 100000
+macroparticlenumber = int(5e5) # 100000
 
 charge = e
 mass = m_p
@@ -138,16 +138,15 @@ bunch.y += yoffset
 
 # SLICER FOR WAKEFIELDS
 # =====================
-#n_slices = 500 # 500
-#slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma_z))#,circumference=circumference, h_bunch=h1)
+n_slices = 500 # 500
+slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma_z))#,circumference=circumference, h_bunch=h1)
 
 # WAKEFIELD
 # ==========
-#n_turns_wake = 1 # for the moment we consider that the wakefield decays after 1 turn
+n_turns_wake = 1 # for the moment we consider that the wakefield decays after 1 turn
 #wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/newkickers_Q26_2018_modified.txt')
-#wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/SPS_complete_wake_model_2018_Q26.txt')
-#ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
-
+wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/SPS_complete_wake_model_2018_Q26.txt')
+ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
 # only dipolar kick
 #my_length = len(ww1.wake_table['quadrupole_x'])
 #ww1.wake_table['quadrupole_x'] = np.zeros(my_length)
@@ -158,7 +157,7 @@ bunch.y += yoffset
 #ww1.wake_table['dipole_x'] = np.zeros(my_length)
 #ww1.wake_table['dipole_y'] = np.zeros(my_length)
 
-#wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
+wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
 
 # CREATE TRANSVERSE AND LONGITUDINAL MAPS
 # =======================================
@@ -174,7 +173,7 @@ longitudinal_map = LinearMap([alpha], circumference, Q_s)
 # ======================================================================
 # SET UP ACCELERATOR MAP AND START TRACKING
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-seed = 12345 + 10 #%seed_step
+seed = 12345 + %seed_step
 rng = np.random.default_rng(seed)
 
 _ = rng.normal(size=100000) 
@@ -199,7 +198,7 @@ delayPhase = np.zeros(numDelay + 1)
 t0 = time.clock()
 
 #reload object from file
-#file2 = open('bunch', 'rb')p_cc
+#file2 = open('bunch', 'rb')
 #bunch = pickle.load(file2)
 #file2.close()
 
@@ -207,9 +206,9 @@ print('--> Begin tracking...')
 one_turn_map = []
 for i, segment in enumerate(transverse_map):
     one_turn_map.append(segment)
-    #if wakefieldOn:
-    #    if i+1 == i_wake:
-    #        one_turn_map.append(wake_field_kicker)
+    if wakefieldOn:
+        if i+1 == i_wake:
+            one_turn_map.append(wake_field_kicker)
 one_turn_map.append(longitudinal_map)
 
 n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the data are damped.
@@ -221,16 +220,19 @@ meanYsq = np.zeros(n_damped_turns)
 emitX = np.zeros(n_damped_turns)
 emitY = np.zeros(n_damped_turns)
 
-# Crab cavity
 Vcc = 1e6
-p_cc = Vcc / (gamma * .938e9)  # Vo/Eb
+#cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc*np.array([0, 1, 1]))
+#p_cc = Vcc / (gamma * .938e9)  # Vo/Eb
 cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc * np.array([0, 1, 1]))
-
+    
 for i in range(n_turns):
-
+    
+    # Crab cavity
+    #Vcc = 1e6
+    #p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
     #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
     #bunch.yp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    #bunch.yp += cc_voltage(i)*np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
+    bunch.yp += cc_voltage(i)*np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
 
     # Gaussian Amplitude noise
     #bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
