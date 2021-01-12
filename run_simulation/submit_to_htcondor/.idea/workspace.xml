@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b9708011-7db9-44b0-bdfc-f1dc212e44b0" name="Default Changelist" comment="" />
+    <list default="true" id="b9708011-7db9-44b0-bdfc-f1dc212e44b0" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/job000_save2pickle_pyheadtail_scanayy_multipltSets_meanOverRuns.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/job000_save2pickle_pyheadtail_scanayy_multipltSets_meanOverRuns.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/job004b_plot_loadFromPickles_dey_scanOverAyy_wakesOnly.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../../post_process_analysis/studies_with_sets_of_kicks/job004b_plot_loadFromPickles_dey_scanOverAyy_wakesOnly.ipynb" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -21,7 +24,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/template_dir" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../run_PyHEADTAIL_no_htcondor" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -44,6 +47,7 @@
       <workItem from="1606486804950" duration="1296000" />
       <workItem from="1608144351857" duration="1373000" />
       <workItem from="1609788483860" duration="10000" />
+      <workItem from="1610360385707" duration="25000" />
     </task>
     <servers />
   </component>
@@ -51,9 +55,14 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="326" y="118" width="424" height="492" key="FileChooserDialogImpl" timestamp="1606494586149">
-      <screen x="0" y="27" width="1080" height="692" />
+    <state x="483" y="158" width="424" height="492" key="FileChooserDialogImpl" timestamp="1610360408748">
+      <screen x="0" y="27" width="1600" height="997" />
     </state>
     <state x="326" y="118" width="424" height="492" key="FileChooserDialogImpl/0.27.1080.692@0.27.1080.692" timestamp="1606494586149" />
+    <state x="483" y="158" key="FileChooserDialogImpl/0.27.1600.997@0.27.1600.997" timestamp="1610360408748" />
+    <state x="456" y="352" key="com.intellij.ide.util.TipDialog" timestamp="1610360392535">
+      <screen x="0" y="27" width="1600" height="997" />
+    </state>
+    <state x="456" y="352" key="com.intellij.ide.util.TipDialog/0.27.1600.997@0.27.1600.997" timestamp="1610360392535" />
   </component>
 </project>
