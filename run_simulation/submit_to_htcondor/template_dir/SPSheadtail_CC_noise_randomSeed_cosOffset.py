@@ -17,12 +17,54 @@ from PyHEADTAIL.monitors.monitors import BunchMonitor, SliceMonitor, ParticleMon
 from PyHEADTAIL.feedback.transverse_damper import TransverseDamper
 from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 
+#=========================================================
+#               Useful functions
+#=========================================================
+def calculate_emittances(x,px,y,py,sigma,delta,beta_gamma=1): # p.189
+    delta_square = delta*delta
+    mean_delta_square = np.mean(delta_square)
+    def emittance(u,up):
+        mean_u_delta = np.mean(u*delta)
+        mean_up_delta = np.mean(up*delta)
+        uu = np.mean(u*u) - mean_u_delta**2/mean_delta_square
+        uup = np.mean(u*up) - mean_u_delta*mean_up_delta/mean_delta_square
+        upup = np.mean(up*up) - mean_up_delta**2/mean_delta_square
+        return np.sqrt(uu*upup - uup**2)*beta_gamma
+    return emittance(x-np.mean(x), px-np.mean(px)), emittance(y-np.mean(y), py-np.mean(py))
+
+def get_values_per_slice(particle_coordinates, parts_id):
+    value = lambda index: particle_coordinates[index]
+    values_per_slice = lambda slice_indices: list(map(value, slice_indices))
+    return list(map(values_per_slice, parts_id))
+
+def emittance_per_slice(bunch, parts_id):
+    x_per_slice = np.array(get_values_per_slice(bunch.x, parts_id))
+    y_per_slice = np.array(get_values_per_slice(bunch.y, parts_id))
+    xp_per_slice = np.array(get_values_per_slice(bunch.xp, parts_id))
+    yp_per_slice = np.array(get_values_per_slice(bunch.yp, parts_id))
+    z_per_slice = np.array(get_values_per_slice(bunch.z, parts_id))
+    dp_per_slice = np.array(get_values_per_slice(bunch.dp, parts_id))
+
+    neps_x = []
+    neps_y = []
+    for i in range(0, len(x_per_slice)):
+        neps_x_temp, neps_y_temp = calculate_emittances(
+            np.array(x_per_slice[i]),
+            np.array(xp_per_slice[i]),
+            np.array(y_per_slice[i]),
+            np.array(yp_per_slice[i]),
+            np.array(z_per_slice[i]),
+            np.array(dp_per_slice[i]), beta*gamma)
+        neps_x.append(neps_x_temp)
+        neps_y.append(neps_y_temp)
+    return neps_x, neps_y
+
 
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(1e5)            # number of cycles to run the simulation for
-decTurns = int(100)               # how often to record data
+n_turns = int(1e4)            # number of cycles to run the simulation for
+decTurns = int(1)               # how often to record data
 
 ampGain = 0  # strength of amplitude feedback (usually between 0 and 0.15)
 phaseGain = 0  # strength of phase feedback (usually between 0 and 0.15)
@@ -33,7 +75,7 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
             #Make sure to adjust Q_x if adjusting numDelay
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
+phaseNoiseOn = 0  # Turns on the phase noise - 0 is off, 1 is on
 stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
@@ -41,7 +83,7 @@ damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 1         # Turns on the wakefields
+wakefieldOn = 0          # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -78,7 +120,7 @@ beta_x[i_wake] = 42.0941 #### (for Q26)
 beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
-Qp_x, Qp_y = 1.0, 1.0 #10
+Qp_x, Qp_y = 0.0, 1.0 #%Qpy #1.0  #10
 
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
@@ -127,14 +169,14 @@ bunch = generate_Gaussian6DTwiss(
     macroparticlenumber, intensity, charge, mass, circumference, gamma,
     alpha_x[0], alpha_y[0], beta_x[0], beta_y[0], beta_z, epsn_x, epsn_y, epsn_z)
 xoffset = 0e-4
-yoffset = 0e-4
+yoffset = 0e-4 #0.25*sigma_y #0e-4
 bunch.x += xoffset
 bunch.y += yoffset
 
 
-#afile = open('bunch', 'wb')
-#pickle.dump(bunch, afile)
-#afile.close()
+afile = open('bunch', 'wb')
+pickle.dump(bunch, afile)
+afile.close()
 
 # SLICER FOR WAKEFIELDS
 # =====================
@@ -215,24 +257,19 @@ n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the 
                        # We want this number as an integer, so it can be used in the next functions. 
 meanX = np.zeros(n_damped_turns)
 meanY = np.zeros(n_damped_turns)
-meanXsq = np.zeros(n_damped_turns)
-meanYsq = np.zeros(n_damped_turns)
-emitX = np.zeros(n_damped_turns)
-emitY = np.zeros(n_damped_turns)
+#meanXsq = np.zeros(n_damped_turns)
+#meanYsq = np.zeros(n_damped_turns)
+#emitX = np.zeros(n_damped_turns)
+#emitY = np.zeros(n_damped_turns)
 
-Vcc = 1e6
-#cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc*np.array([0, 1, 1]))
-#p_cc = Vcc / (gamma * .938e9)  # Vo/Eb
-cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc * np.array([0, 1, 1]))
+neps_x_list, neps_y_list = [], []
     
 for i in range(n_turns):
     
     # Crab cavity
-    #Vcc = 1e6
-    #p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
+    Vcc = 1e6
+    p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
     #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
-    #bunch.yp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    bunch.yp += cc_voltage(i)*np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
 
     # Gaussian Amplitude noise
     #bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
@@ -241,7 +278,12 @@ for i in range(n_turns):
     # Gaussian Phase noise
     #bunch.xp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
     bunch.yp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-
+    
+    # Initial cosine offset
+    if i == 0:
+     print('Initial offset applied')
+     bunch.yp += 0.25*sigma_y*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)/50.
+     
     #These next two lines actually "run" the simulation - the computationally heavy part
     for m in one_turn_map:
         m.track(bunch)
@@ -271,18 +313,40 @@ for i in range(n_turns):
         j = int(i/decTurns)
         meanX[j] = np.mean(bunch.x)
         meanY[j] = np.mean(bunch.y)
-        meanXsq[j] = np.mean((bunch.x-np.mean(bunch.x))**2)
-        meanYsq[j] = np.mean((bunch.y-np.mean(bunch.y))**2)
-        emitX[j] = bunch.epsn_x()
-        emitY[j] = bunch.epsn_y()
+        #meanXsq[j] = np.mean((bunch.x-np.mean(bunch.x))**2)
+        #meanYsq[j] = np.mean((bunch.y-np.mean(bunch.y))**2)
+        #emitX[j] = bunch.epsn_x()
+        #emitY[j] = bunch.epsn_y()
 
-dataExport = [meanX, meanY, meanXsq, meanYsq, emitX, emitY]
+	# get the ID of the particles at each slice
+        parts_id = []
+        my_sliceSet = bunch.get_slices(slicer_for_wakefields) # type; PyHEADTAIL.particles.slicing.SliceSet
+        for my_slice in np.arange(my_sliceSet.n_slices):
+            parts_id.append(list(my_sliceSet.particle_indices_of_slice(slice_index=my_slice)))
+
+        # emittance_per_slice(bunch)
+        neps_x_current, neps_y_current = emittance_per_slice(bunch, parts_id)
+        neps_x_list.append(neps_x_current)
+        neps_y_list.append(neps_y_current)
+
+
+
+dataExport = [meanX, meanY]
 
 f = open(filename, 'w')
 
 with f:
     out = csv.writer(f, delimiter=',')
     out.writerows(zip(*dataExport))
+f.close()
+with open('file_nepsy.pkl', 'wb') as ff:
+        pickle.dump(neps_y_list, ff, pickle.HIGHEST_PROTOCOL)
+ff.close()
+
+with open('file_nepsx.pkl', 'wb') as ff:
+        pickle.dump(neps_x_list, ff, pickle.HIGHEST_PROTOCOL)
+ff.close()
+
 
 print('--> Done.')
 

@@ -21,8 +21,8 @@ from PyHEADTAIL.impedances.wakes import CircularResonator, WakeTable, WakeField
 #==========================================================
 #               Variables We Change
 #==========================================================
-n_turns = int(1e5)            # number of cycles to run the simulation for
-decTurns = int(100)               # how often to record data
+n_turns = int(100000)            # number of cycles to run the simulation for
+decTurns = int(1)               # how often to record data
 
 ampGain = 0  # strength of amplitude feedback (usually between 0 and 0.15)
 phaseGain = 0  # strength of phase feedback (usually between 0 and 0.15)
@@ -33,7 +33,7 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
             #Make sure to adjust Q_x if adjusting numDelay
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
+phaseNoiseOn = 0  # Turns on the phase noise - 0 is off, 1 is on
 stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
@@ -41,7 +41,7 @@ damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 1         # Turns on the wakefields
+wakefieldOn = 1          # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -78,7 +78,7 @@ beta_x[i_wake] = 42.0941 #### (for Q26)
 beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
-Qp_x, Qp_y = 1.0, 1.0 #10
+Qp_x, Qp_y = 0.0, 1.0  #%Qpy #1.0  #10
 
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
@@ -127,7 +127,7 @@ bunch = generate_Gaussian6DTwiss(
     macroparticlenumber, intensity, charge, mass, circumference, gamma,
     alpha_x[0], alpha_y[0], beta_x[0], beta_y[0], beta_z, epsn_x, epsn_y, epsn_z)
 xoffset = 0e-4
-yoffset = 0e-4
+yoffset = 0.25*sigma_y #0e-4
 bunch.x += xoffset
 bunch.y += yoffset
 
@@ -215,24 +215,17 @@ n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the 
                        # We want this number as an integer, so it can be used in the next functions. 
 meanX = np.zeros(n_damped_turns)
 meanY = np.zeros(n_damped_turns)
-meanXsq = np.zeros(n_damped_turns)
-meanYsq = np.zeros(n_damped_turns)
+#meanXsq = np.zeros(n_damped_turns)
+#meanYsq = np.zeros(n_damped_turns)
 emitX = np.zeros(n_damped_turns)
 emitY = np.zeros(n_damped_turns)
-
-Vcc = 1e6
-#cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc*np.array([0, 1, 1]))
-#p_cc = Vcc / (gamma * .938e9)  # Vo/Eb
-cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc * np.array([0, 1, 1]))
     
 for i in range(n_turns):
     
     # Crab cavity
-    #Vcc = 1e6
-    #p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
+    Vcc = 1e6
+    p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
     #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
-    #bunch.yp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    bunch.yp += cc_voltage(i)*np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
 
     # Gaussian Amplitude noise
     #bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
@@ -271,12 +264,12 @@ for i in range(n_turns):
         j = int(i/decTurns)
         meanX[j] = np.mean(bunch.x)
         meanY[j] = np.mean(bunch.y)
-        meanXsq[j] = np.mean((bunch.x-np.mean(bunch.x))**2)
-        meanYsq[j] = np.mean((bunch.y-np.mean(bunch.y))**2)
+        #meanXsq[j] = np.mean((bunch.x-np.mean(bunch.x))**2)
+        #meanYsq[j] = np.mean((bunch.y-np.mean(bunch.y))**2)
         emitX[j] = bunch.epsn_x()
         emitY[j] = bunch.epsn_y()
 
-dataExport = [meanX, meanY, meanXsq, meanYsq, emitX, emitY]
+dataExport = [meanX, meanY, emitX, emitY]
 
 f = open(filename, 'w')
 

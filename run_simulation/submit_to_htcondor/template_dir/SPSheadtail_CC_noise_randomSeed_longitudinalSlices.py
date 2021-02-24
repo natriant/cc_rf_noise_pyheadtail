@@ -59,6 +59,16 @@ def emittance_per_slice(bunch, parts_id):
         neps_x.append(neps_x_temp)
         neps_y.append(neps_y_temp)
     return neps_x, neps_y
+
+def meanY_per_slice(bunch, parts_id):
+    y_per_slice = np.array(get_values_per_slice(bunch.y, parts_id))
+    mean_y = []
+    for i in range(0, len(y_per_slice)):
+        mean_y_temp = np.mean(y_per_slice[i])
+        mean_y.append(mean_y_temp)
+    return mean_y
+
+
 #==========================================================
 #               Variables We Change
 #==========================================================
@@ -207,7 +217,7 @@ transverse_map = TransverseMap(s, alpha_x, beta_x, D_x, alpha_y, beta_y, D_y, Q_
     [Chromaticity(Qp_x, Qp_y),
     AmplitudeDetuning(app_x*scale_factor, app_y*scale_factor, app_xy*scale_factor)])
 
-#longitudinal_map = LinearMap([alpha], circumference, Q_s)
+longitudinal_map = LinearMap([alpha], circumference, Q_s)
 
 
 
@@ -250,7 +260,7 @@ for i, segment in enumerate(transverse_map):
     if wakefieldOn:
         if i+1 == i_wake:
             one_turn_map.append(wake_field_complete)
-#one_turn_map.append(longitudinal_map)
+one_turn_map.append(longitudinal_map)
 
 n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the data are damped.
                        # We want this number as an integer, so it can be used in the next functions. 
@@ -262,7 +272,7 @@ n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the 
 #    parts_id.append(list(my_sliceSet.particle_indices_of_slice(slice_index=my_slice)))
 
 neps_x_list, neps_y_list = [], []
-
+meanY_list = []
 for i in range(n_turns):
     # Crab cavity
     Vcc = 1e6
@@ -314,9 +324,16 @@ for i in range(n_turns):
         neps_x_current, neps_y_current = emittance_per_slice(bunch, parts_id)
         neps_x_list.append(neps_x_current)
         neps_y_list.append(neps_y_current)
+       
+        meany = meanY_per_slice(bunch, parts_id)
+        meanY_list.append(meany)
 
 
-with open(f'{filename}.pkl', 'wb') as ff:
+with open(f'{filename}_nepsy.pkl', 'wb') as ff:
+        pickle.dump(neps_y_list, ff, pickle.HIGHEST_PROTOCOL)
+ff.close()
+
+with open(f'{filename}_meany.pkl', 'wb') as ff:
         pickle.dump(neps_y_list, ff, pickle.HIGHEST_PROTOCOL)
 ff.close()
 

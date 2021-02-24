@@ -3,7 +3,7 @@
 DIR=/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity
 
 
-for i in *mytest*
+for i in *WakesON_resonCircON*
 do
 
         cd $DIR/$i

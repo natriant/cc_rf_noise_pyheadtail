@@ -34,14 +34,14 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
 phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
-stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
-stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
+stdAmpNoise = 1e-8#*np.sqrt(1.82)  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
+stdPhaseNoise = 1e-8 #*np.sqrt(0.72)  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
 damperOn = 0  # Turns on the damper - 0 is off, 1 is on
-dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
+dampingrate_x = 0 #50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
-wakefieldOn = 0          # Turns on the wakefields
+wakefieldOn = 0         # Turns on the wakefields
 
 measNoiseOn = 0             # Turns on the measurement noise - 0 is off, 1 is on
 stdMeasNoise = 1000e-9       # standard deviation of measurement noise
@@ -78,7 +78,7 @@ beta_x[i_wake] = 42.0941 #### (for Q26)
 beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
-Qp_x, Qp_y = 1.0, 1.0 #10
+Qp_x, Qp_y = 5.0, 5.0 #10
 
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
@@ -97,7 +97,7 @@ p_increment = 0 * e/c * circumference/(beta*c)
 
 # CREATE DAMPER
 # =============
-dampingrate_y = 10 #40
+dampingrate_y = 40 #40
 damper = TransverseDamper(dampingrate_x, dampingrate_y)
 
 # CREATE BEAM
@@ -153,9 +153,9 @@ ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'qua
 #ww1.wake_table['quadrupole_y'] = np.zeros(my_length)
 
 # only quadrupolar kick
-my_length = len(ww1.wake_table['dipole_x'])
-ww1.wake_table['dipole_x'] = np.zeros(my_length)
-ww1.wake_table['dipole_y'] = np.zeros(my_length)
+#my_length = len(ww1.wake_table['dipole_x'])
+#ww1.wake_table['dipole_x'] = np.zeros(my_length)
+#ww1.wake_table['dipole_y'] = np.zeros(my_length)
 
 wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
 

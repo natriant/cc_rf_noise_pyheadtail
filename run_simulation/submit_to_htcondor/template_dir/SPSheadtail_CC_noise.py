@@ -83,7 +83,7 @@ Qp_x, Qp_y = 0, 0 #10
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
 app_xy = 0.0 #-0*2.25e-11
-app_y = 0.0 #15000  #-7.31-14 #0*3e-11
+app_y = %ayy #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP

@@ -34,11 +34,11 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
 phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
-stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
-stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
+stdAmpNoise = 1e-8 #*np.sqrt(1.82)  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
+stdPhaseNoise = 1e-8 #*np.sqrt(0.72)  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
 damperOn = 0  # Turns on the damper - 0 is off, 1 is on
-dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
+dampingrate_x = 0 #50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
 wakefieldOn = 1         # Turns on the wakefields
@@ -97,7 +97,7 @@ p_increment = 0 * e/c * circumference/(beta*c)
 
 # CREATE DAMPER
 # =============
-dampingrate_y = 10 #40
+dampingrate_y = 40 #40
 damper = TransverseDamper(dampingrate_x, dampingrate_y)
 
 # CREATE BEAM
@@ -143,21 +143,29 @@ slicer_for_wakefields = UniformBinSlicer(n_slices, z_cuts=(-3.*sigma_z, 3.*sigma
 
 # WAKEFIELD
 # ==========
+
+# 1) Load the SPS imepdance model
 n_turns_wake = 1 # for the moment we consider that the wakefield decays after 1 turn
-#wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/newkickers_Q26_2018_modified.txt')
 wakefile1 = ('/afs/cern.ch/work/n/natriant/private/pyheadtail_example_crabcavity/wakefields/SPS_complete_wake_model_2018_Q26.txt')
 ww1 = WakeTable(wakefile1, ['time', 'dipole_x', 'dipole_y', 'quadrupole_x', 'quadrupole_y'], n_turns_wake=n_turns_wake)
-# only dipolar kick
+
+# only dipolar kick- uncomment the following 3 lines
 #my_length = len(ww1.wake_table['quadrupole_x'])
 #ww1.wake_table['quadrupole_x'] = np.zeros(my_length)
 #ww1.wake_table['quadrupole_y'] = np.zeros(my_length)
 
-# only quadrupolar kick
+# only quadrupolar kick, uncomment the following 3 lines
 #my_length = len(ww1.wake_table['dipole_x'])
 #ww1.wake_table['dipole_x'] = np.zeros(my_length)
 #ww1.wake_table['dipole_y'] = np.zeros(my_length)
 
-wake_field_kicker = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
+wake_field_complete_sps = WakeField(slicer_for_wakefields, ww1)#, beta_x=beta_x, beta_y=beta_y)
+
+# 2) Definition of wakefield of a circular resonator
+reson_circ = CircularResonator(R_shunt=2.2e6, frequency=1.92e9, Q=59000) # assuming here that Q is the quality factor in 1e4
+wake_field_reson_circ = WakeField(slicer_for_wakefields, reson_circ)
+
+
 
 # CREATE TRANSVERSE AND LONGITUDINAL MAPS
 # =======================================
@@ -208,7 +216,8 @@ for i, segment in enumerate(transverse_map):
     one_turn_map.append(segment)
     if wakefieldOn:
         if i+1 == i_wake:
-            one_turn_map.append(wake_field_kicker)
+            one_turn_map.append(wake_field_complete_sps)
+            one_turn_map.append(wake_field_reson_circ)
 one_turn_map.append(longitudinal_map)
 
 n_damped_turns = int(n_turns/decTurns) # The total number of turns at which the data are damped.
@@ -219,20 +228,13 @@ meanXsq = np.zeros(n_damped_turns)
 meanYsq = np.zeros(n_damped_turns)
 emitX = np.zeros(n_damped_turns)
 emitY = np.zeros(n_damped_turns)
-
-Vcc = 1e6
-#cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc*np.array([0, 1, 1]))
-#p_cc = Vcc / (gamma * .938e9)  # Vo/Eb
-cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc * np.array([0, 1, 1]))
     
 for i in range(n_turns):
     
     # Crab cavity
-    #Vcc = 1e6
-    #p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
+    Vcc = 1e6
+    p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
     #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
-    #bunch.yp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    bunch.yp += cc_voltage(i)*np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
 
     # Gaussian Amplitude noise
     #bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)

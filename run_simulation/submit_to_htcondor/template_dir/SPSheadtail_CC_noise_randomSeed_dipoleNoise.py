@@ -33,9 +33,13 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
             #Make sure to adjust Q_x if adjusting numDelay
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
+phaseNoiseOn = 0  # Turns on the phase noise - 0 is off, 1 is on
+dipoleNoiseOn = 1 # Turns on the dipolar noise kick - 0 is off, 1 is on
+
 stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
+stdDipoleNoise = 1e-8/np.sqrt(2)
+
 
 damperOn = 0  # Turns on the damper - 0 is off, 1 is on
 dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
@@ -78,12 +82,12 @@ beta_x[i_wake] = 42.0941 #### (for Q26)
 beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
-Qp_x, Qp_y = 1.0, 1.0 #10
+Qp_x, Qp_y = 0.0, 0.0 #10
 
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
 app_xy = 0.0 #-0*2.25e-11
-app_y = %ayy #15000  #-7.31-14 #0*3e-11
+app_y = -6000.0 #%ayy #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -106,7 +110,7 @@ macroparticlenumber = int(5e5) # 100000
 
 charge = e
 mass = m_p
-intensity = 3.5e10
+intensity = %intensity#3.5e10
 
 R = circumference/(2*np.pi)
 eta = alpha-1/gamma**2
@@ -187,6 +191,11 @@ if phaseNoiseOn == 1:
     phaseKicks = rng.normal(loc=0, scale=stdPhaseNoise, size=n_turns)
 else:
     phaseKicks = np.zeros(n_turns)
+if dipoleNoiseOn ==1:
+    dipoleKicks = rng.normal(loc=0, scale=stdDipoleNoise, size=n_turns)
+else:
+    dipoleKicks = np.zeros(n_turns)
+
 if measNoiseOn == 1:
     noise = rng.normal(loc=0, scale=stdMeasNoise, size=n_turns) # / beta_x[0] #Remove beta_x[0] when measuring in x
 else:
@@ -241,6 +250,9 @@ for i in range(n_turns):
     # Gaussian Phase noise
     #bunch.xp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
     bunch.yp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+
+    # Gausian Dipole noise
+    bunch.yp += dipoleKicks[i]
 
     #These next two lines actually "run" the simulation - the computationally heavy part
     for m in one_turn_map:
