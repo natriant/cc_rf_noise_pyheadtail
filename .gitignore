@@ -13,6 +13,9 @@ run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/file.pkl
 post_process_analysis/file.pkl
 post_process_analysis/*.png
 post_process_analysis/bunch
+post_process_analysis/studies_with_sets_of_kicks/bunch
+post_process_analysis/studies_with_sets_of_kicks/bunch_emity2.3um
+post_process_analysis/studies_with_sets_of_kicks/bunch_emity2um
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/test_DQcoherent_vs_Intensity/output/*
 run_simulation/run_PyHEADTAIL_no_htcondor/impedance_studies/test_DQcoherent_vs_Intensity/wakes_files/*
 
