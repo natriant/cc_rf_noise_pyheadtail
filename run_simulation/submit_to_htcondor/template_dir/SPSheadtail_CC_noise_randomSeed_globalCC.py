@@ -8,6 +8,9 @@ import pickle
 import scipy
 from scipy.constants import m_p, c, e
 
+# insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, '/afs/cern.ch/work/n/natriant/private/PyHEADTAIL/')
+
 from PyHEADTAIL.particles.slicing import UniformBinSlicer
 from PyHEADTAIL.particles.generators import generate_Gaussian6DTwiss 
 from PyHEADTAIL.trackers.detuners import Chromaticity, AmplitudeDetuning
@@ -34,11 +37,11 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
 phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
-stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
-stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
+stdAmpNoise = 1e-8 #*np.sqrt(1.82)  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
+stdPhaseNoise = 1e-8 #*np.sqrt(0.72)  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
 damperOn = 0  # Turns on the damper - 0 is off, 1 is on
-dampingrate_x = 50  # Strength of the damper (note it must be turned on further down in the code)
+dampingrate_x = 0 #50  # Strength of the damper (note it must be turned on further down in the code)
                             #(40 is the "standard" value)
 
 wakefieldOn = 1         # Turns on the wakefields
@@ -52,7 +55,9 @@ stdMeasNoise = 1000e-9       # standard deviation of measurement noise
 #           Variables We (Usually) Do Not Change
 #==========================================================
 
-gamma = 287.8
+gamma = 213.16 #287.8
+P0C = 199.9e9 # eV *c (?)
+
 p0 = m_p*c*np.sqrt(gamma**2 - 1)
 beta = np.sqrt(1 - 1/gamma**2)
 circumference = 6911.5623
@@ -82,8 +87,8 @@ Qp_x, Qp_y = 1.0, 1.0 #10
 
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
-app_xy = 0.0 #-0*2.25e-11
-app_y = %ayy #15000  #-7.31-14 #0*3e-11
+app_xy = %axy #0.0 #-0*2.25e-11
+app_y = %ayy #2000.0 #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -97,7 +102,7 @@ p_increment = 0 * e/c * circumference/(beta*c)
 
 # CREATE DAMPER
 # =============
-dampingrate_y = 10 #40
+dampingrate_y = 40 #40
 damper = TransverseDamper(dampingrate_x, dampingrate_y)
 
 # CREATE BEAM
@@ -106,15 +111,18 @@ macroparticlenumber = int(5e5) # 100000
 
 charge = e
 mass = m_p
-intensity = 3.5e10
+intensity = 3.0e10
 
 R = circumference/(2*np.pi)
 eta = alpha-1/gamma**2
 beta_z = np.abs(eta)*R/Q_s
-epsn_x = 2e-6  # m
-epsn_y = 2e-6  # m
-epsn_z = 2.5  # m
-sigma_z = 0.155  # m
+epsn_x = 2.3e-6  # m
+epsn_y = 2.3e-6  # m
+#epsn_z = 2.5  # m
+tau = 2.2e-9 # 4 sigma_t [s]
+sigma_z = c*tau/4 #0.155  # m
+#sigma_z = %sigmaz #0.155
+print(f'sigma_z= {sigma_z} [m]')
 
 sigma_x = np.sqrt(epsn_x/(beta*gamma) * beta_x[0])
 sigma_xp = sigma_x/beta_x[0]
@@ -122,6 +130,7 @@ sigma_y = np.sqrt(epsn_y/(beta*gamma) * beta_y[0])
 sigma_yp = sigma_y/beta_y[0]
 sigma_dp = sigma_z/beta_z
 epsn_z = 4*np.pi * p0/e * sigma_z*sigma_dp
+print(f'epsn_z={epsn_z}')
 
 bunch = generate_Gaussian6DTwiss(
     macroparticlenumber, intensity, charge, mass, circumference, gamma,
@@ -221,26 +230,27 @@ emitX = np.zeros(n_damped_turns)
 emitY = np.zeros(n_damped_turns)
 
 Vcc = 1e6
-#cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc*np.array([0, 1, 1]))
-#p_cc = Vcc / (gamma * .938e9)  # Vo/Eb
-cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc * np.array([0, 1, 1]))
-    
+cc_voltage = lambda turn: np.interp(turn, [0, 200, 1e12], Vcc * np.array([0, 1, 1])) # ramp up during the first 200 turns
+deg2rad = np.pi/180
+ 
 for i in range(n_turns):
     
     # Crab cavity
-    #Vcc = 1e6
-    #p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
-    #bunch.xp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)  
-    #bunch.yp += (i/n_turns)*p_cc*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    bunch.yp += cc_voltage(i)*np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
+    Vcc = 1e6
+    p_cc = Vcc/(gamma*.938e9)  # Vo/Eb
 
     # Gaussian Amplitude noise
     #bunch.xp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    bunch.yp += ampKicks[i]*np.sin(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-
+    bunch.yp += [cc_voltage(i)+ ampKicks[i]] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9)
+     
     # Gaussian Phase noise
-    #bunch.xp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
-    bunch.yp += phaseKicks[i]*np.cos(2*np.pi*400e6/(bunch.beta*c)*bunch.z)
+    if i == 0:
+        bunch.yp += [cc_voltage(i)] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z)/(gamma * .938e9) 
+    else:
+        bunch.yp += [cc_voltage(i)] * np.sin(2 * np.pi * 400e6 / (bunch.beta * c) * bunch.z+phaseKicks[i]*P0C/cc_voltage(i))/(gamma * .938e9)  # phase and amplitude noise
+    
+
+    
 
     #These next two lines actually "run" the simulation - the computationally heavy part
     for m in one_turn_map:
@@ -287,5 +297,3 @@ with f:
 print('--> Done.')
 
 print("Simulation time in seconds: " + str(time.clock() - t0))
-
-
