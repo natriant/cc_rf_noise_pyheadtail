@@ -36,7 +36,7 @@ numDelay = 1 #Turns of delay between measuring and acting with the feedback syst
             #Make sure to adjust Q_x if adjusting numDelay
 
 ampNoiseOn = 0  # Turns on the amplitude noise - 0 is off, 1 is on
-phaseNoiseOn = 1  # Turns on the phase noise - 0 is off, 1 is on
+phaseNoiseOn = 0  # Turns on the phase noise - 0 is off, 1 is on
 stdAmpNoise = 1e-8  # Size of amplitude noise (1e-8 for ~22nm/s at 0 ampGain)
 stdPhaseNoise = 1e-8  # Size of phase noise (1e-8 for ~24nm/s at 0 phaseGain)
 
@@ -81,12 +81,12 @@ beta_x[i_wake] = 42.0941 #### (for Q26)
 beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
-Qp_x, Qp_y = 0.0, 0.0 #10
+Qp_x, Qp_y = 1.0, 1.0 #10
 
 # detuning coefficients in (1/m)
-app_x = 0.0 #153.8183853 #15 #4e-11
+app_x = 0.0 #1500 #0.0 #153.8183853 #15 #4e-11
 app_xy = 0.0 #-416.0175086  #-0*2.25e-11
-app_y = 6000.0 #4000.0 #-50.03699877 #15000  #-7.31-14 #0*3e-11
+app_y = 1500 #%ayy #6000.0 #4000.0 #-50.03699877 #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -114,10 +114,13 @@ intensity = %intensity
 R = circumference/(2*np.pi)
 eta = alpha-1/gamma**2
 beta_z = np.abs(eta)*R/Q_s
-epsn_x = 2e-6  # m
-epsn_y = 2e-6  # m
+epsn_x = 2.3e-6  # m
+epsn_y = 2.3e-6  # m
 epsn_z = 2.5  # m
-sigma_z = 0.155  # m
+#sigma_z = 0.155  # m
+tau = 1.7e-9 # 4 sigma_t [s]
+sigma_z = c*tau/4 #0.155  # m
+
 
 sigma_x = np.sqrt(epsn_x/(beta*gamma) * beta_x[0])
 sigma_xp = sigma_x/beta_x[0]
@@ -129,8 +132,8 @@ epsn_z = 4*np.pi * p0/e * sigma_z*sigma_dp
 bunch = generate_Gaussian6DTwiss(
     macroparticlenumber, intensity, charge, mass, circumference, gamma,
     alpha_x[0], alpha_y[0], beta_x[0], beta_y[0], beta_z, epsn_x, epsn_y, epsn_z)
-xoffset = 0.0 #1e-4
-yoffset = 1e-4 #0.01*sigma_y # [m]
+xoffset = 0.0 #*sigma_x #1e-4
+yoffset = 0.15*sigma_y #1e-4 #0.01*sigma_y # [m]
 bunch.x += xoffset
 bunch.y += yoffset
 

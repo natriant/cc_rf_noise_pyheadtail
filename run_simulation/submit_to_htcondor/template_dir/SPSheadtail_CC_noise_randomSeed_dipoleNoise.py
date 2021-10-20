@@ -82,12 +82,12 @@ beta_x[i_wake] = 42.0941 #### (for Q26)
 beta_y[i_wake] = 42.0137 #### (for Q26)
 
 Q_x, Q_y = 26.13, 26.18
-Qp_x, Qp_y = 0.0, 0.0 #10
+Qp_x, Qp_y = 1.0, 1.0 #10
 
 # detuning coefficients in (1/m)
 app_x = 0.0  #2.4705e-15 #4e-11
 app_xy = 0.0 #-0*2.25e-11
-app_y = -6000.0 #%ayy #15000  #-7.31-14 #0*3e-11
+app_y = +2000.0 #%ayy #-6000.0 #%ayy #15000  #-7.31-14 #0*3e-11
 
 
 # PARAMETERS FOR LONGITUDINAL MAP
@@ -110,15 +110,20 @@ macroparticlenumber = int(5e5) # 100000
 
 charge = e
 mass = m_p
-intensity = %intensity#3.5e10
+intensity = 3.0e10 #%intensity#3.5e10
 
 R = circumference/(2*np.pi)
 eta = alpha-1/gamma**2
 beta_z = np.abs(eta)*R/Q_s
-epsn_x = 2e-6  # m
-epsn_y = 2e-6  # m
-epsn_z = 2.5  # m
-sigma_z = 0.155  # m
+epsn_x = 2.3e-6  # m
+epsn_y = 2.3e-6  # m
+#epsn_z = 2.5  # m
+#tau = 1.6e-9 # 4 sigma_t [s]
+#sigma_z = c*tau/4 #0.155  # m
+sigma_z = %sigmaz #0.155
+print(f'sigma_z= {sigma_z} [m]')
+
+
 
 sigma_x = np.sqrt(epsn_x/(beta*gamma) * beta_x[0])
 sigma_xp = sigma_x/beta_x[0]
